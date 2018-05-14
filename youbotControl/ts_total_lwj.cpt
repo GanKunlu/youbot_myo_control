@@ -174,6 +174,8 @@
   -- 工单解决时间,
   FROM_UNIXTIME(t.update_date) update_date,
   -- 工单处理时间,
+  ROUND(t10.first_duration/60, 1) first_duration,
+  -- 首响时间,
  (CASE
   WHEN  t.STATUS=1 OR t.status=6   THEN 
   ROUND((UNIX_TIMESTAMP(NOW())-t10.create_date+t10.deal_duration)/60/60,1)
@@ -703,9 +705,9 @@ $(".x-table tr[id]A").bind("mousedown", function () {
 <UPFCR COLUMN="false" ROW="true"/>
 </ReportPageAttr>
 <RowHeight defaultValue="723900">
-<![CDATA[0,1143000,723900,723900,723900,723900,723900,723900,723900,723900,723900]]></RowHeight>
+<![CDATA[0,1143000,1143000,723900,723900,723900,723900,723900,723900,723900,723900]]></RowHeight>
 <ColumnWidth defaultValue="2743200">
-<![CDATA[2743200,2743200,2438400,2743200,2743200,2743200,4038600,8077200,0,2705100,0,2743200,4533900,4762500,4762500,3962400,3924300,0,2971800,3848100,3543300,18897600,4914900,5676900,2743200,4648200,2743200,3543300,2895600,2743200,3086100,3048000,2743200,2743200,2743200,2743200,3048000,12915900,4876800,15201900,2743200]]></ColumnWidth>
+<![CDATA[2743200,2743200,2438400,2743200,2743200,2743200,4038600,8077200,0,2705100,0,2743200,4533900,4762500,4762500,3962400,3924300,0,3314700,2971800,3848100,3543300,18897600,4914900,5676900,2743200,4648200,2743200,3543300,2895600,2743200,3086100,3048000,2743200,2743200,2743200,2743200,3048000,12915900,4876800,15201900,2743200]]></ColumnWidth>
 <CellElementList>
 <C c="0" r="0">
 <Expand/>
@@ -737,9 +739,6 @@ $(".x-table tr[id]A").bind("mousedown", function () {
 <C c="15" r="0" s="0">
 <Expand/>
 </C>
-<C c="22" r="0" s="0">
-<Expand/>
-</C>
 <C c="23" r="0" s="0">
 <Expand/>
 </C>
@@ -761,7 +760,10 @@ $(".x-table tr[id]A").bind("mousedown", function () {
 <C c="29" r="0" s="0">
 <Expand/>
 </C>
-<C c="30" r="0" cs="10" s="0">
+<C c="30" r="0" s="0">
+<Expand/>
+</C>
+<C c="31" r="0" cs="10" s="0">
 <HighlightList>
 <Highlight class="com.fr.report.cell.cellattr.highlight.DefaultHighlight">
 <Name>
@@ -933,112 +935,117 @@ $(".x-table tr[id]A").bind("mousedown", function () {
 <![CDATA[首响时长]]></O>
 <Expand/>
 </C>
-<C c="18" r="1" s="0">
+<C c="18" r="1">
 <O>
-<![CDATA[指派次数]]></O>
+<![CDATA[首响时长(min)]]></O>
 <Expand/>
 </C>
 <C c="19" r="1" s="0">
 <O>
-<![CDATA[当前处理人编号]]></O>
+<![CDATA[指派次数]]></O>
 <Expand/>
 </C>
 <C c="20" r="1" s="0">
 <O>
-<![CDATA[当前处理人]]></O>
+<![CDATA[当前处理人编号]]></O>
 <Expand/>
 </C>
 <C c="21" r="1" s="0">
 <O>
-<![CDATA[处理结果]]></O>
+<![CDATA[当前处理人]]></O>
 <Expand/>
 </C>
 <C c="22" r="1" s="0">
 <O>
-<![CDATA[预计解决时间]]></O>
+<![CDATA[处理结果]]></O>
 <Expand/>
 </C>
 <C c="23" r="1" s="0">
 <O>
-<![CDATA[回电提醒]]></O>
+<![CDATA[预计解决时间]]></O>
 <Expand/>
 </C>
 <C c="24" r="1" s="0">
 <O>
-<![CDATA[回电电话]]></O>
+<![CDATA[回电提醒]]></O>
 <Expand/>
 </C>
 <C c="25" r="1" s="0">
 <O>
-<![CDATA[期望回电时间]]></O>
+<![CDATA[回电电话]]></O>
 <Expand/>
 </C>
 <C c="26" r="1" s="0">
 <O>
-<![CDATA[投诉来源]]></O>
+<![CDATA[期望回电时间]]></O>
 <Expand/>
 </C>
 <C c="27" r="1" s="0">
 <O>
-<![CDATA[紧急程度]]></O>
+<![CDATA[投诉来源]]></O>
 <Expand/>
 </C>
 <C c="28" r="1" s="0">
 <O>
-<![CDATA[是否已读]]></O>
+<![CDATA[紧急程度]]></O>
 <Expand/>
 </C>
 <C c="29" r="1" s="0">
 <O>
-<![CDATA[创建人姓名]]></O>
+<![CDATA[是否已读]]></O>
 <Expand/>
 </C>
 <C c="30" r="1" s="0">
 <O>
-<![CDATA[投诉电话]]></O>
+<![CDATA[创建人姓名]]></O>
 <Expand/>
 </C>
 <C c="31" r="1" s="0">
 <O>
-<![CDATA[工单投诉类型]]></O>
+<![CDATA[投诉电话]]></O>
 <Expand/>
 </C>
 <C c="32" r="1" s="0">
 <O>
-<![CDATA[学员编号]]></O>
+<![CDATA[工单投诉类型]]></O>
 <Expand/>
 </C>
 <C c="33" r="1" s="0">
 <O>
-<![CDATA[学员姓名]]></O>
+<![CDATA[学员编号]]></O>
 <Expand/>
 </C>
 <C c="34" r="1" s="0">
 <O>
-<![CDATA[学员年级]]></O>
+<![CDATA[学员姓名]]></O>
 <Expand/>
 </C>
 <C c="35" r="1" s="0">
 <O>
-<![CDATA[学员年部]]></O>
+<![CDATA[学员年级]]></O>
 <Expand/>
 </C>
 <C c="36" r="1" s="0">
 <O>
-<![CDATA[创建人工号]]></O>
+<![CDATA[学员年部]]></O>
 <Expand/>
 </C>
 <C c="37" r="1" s="0">
 <O>
-<![CDATA[创建人部门名称]]></O>
+<![CDATA[创建人工号]]></O>
 <Expand/>
 </C>
 <C c="38" r="1" s="0">
 <O>
-<![CDATA[当前处理人部门编号]]></O>
+<![CDATA[创建人部门名称]]></O>
 <Expand/>
 </C>
 <C c="39" r="1" s="0">
+<O>
+<![CDATA[当前处理人部门编号]]></O>
+<Expand/>
+</C>
+<C c="40" r="1" s="0">
 <O>
 <![CDATA[当前处理人部门名称]]></O>
 <Expand/>
@@ -1267,7 +1274,18 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="18" r="2" s="2">
+<C c="18" r="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="first_duration"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Result>
+<![CDATA[$$$]]></Result>
+<Parameters/>
+</O>
+<Expand/>
+</C>
+<C c="19" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="send_count"/>
 <Complex/>
@@ -1276,7 +1294,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="19" r="2" s="2">
+<C c="20" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="receiver_emp_code"/>
 <Complex/>
@@ -1285,7 +1303,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="20" r="2" s="2">
+<C c="21" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="receiver_emp_name"/>
 <Complex/>
@@ -1294,7 +1312,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="21" r="2" s="5">
+<C c="22" r="2" s="5">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="action_desc"/>
 <Complex/>
@@ -1303,7 +1321,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="22" r="2" s="2">
+<C c="23" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="expectation_date"/>
 <Complex/>
@@ -1312,7 +1330,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="23" r="2" s="5">
+<C c="24" r="2" s="5">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="call_back_remind"/>
 <Complex/>
@@ -1321,7 +1339,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="24" r="2" s="2">
+<C c="25" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="call_phone"/>
 <Complex/>
@@ -1330,7 +1348,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="25" r="2" s="2">
+<C c="26" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="call_phone_date"/>
 <Complex/>
@@ -1339,7 +1357,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="26" r="2" s="2">
+<C c="27" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="invoking_id"/>
 <Complex/>
@@ -1348,7 +1366,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="27" r="2" s="2">
+<C c="28" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="urgency_level"/>
 <Complex/>
@@ -1357,7 +1375,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="28" r="2" s="2">
+<C c="29" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="first_read"/>
 <Complex/>
@@ -1366,7 +1384,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="29" r="2" s="2">
+<C c="30" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="create_emp_name"/>
 <Complex/>
@@ -1375,7 +1393,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="30" r="2" s="2">
+<C c="31" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="informer_tel"/>
 <Complex/>
@@ -1384,7 +1402,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="31" r="2" s="2">
+<C c="32" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="operation_type_id"/>
 <Complex/>
@@ -1393,7 +1411,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="32" r="2" s="2">
+<C c="33" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="stu_code"/>
 <Complex/>
@@ -1402,7 +1420,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="33" r="2" s="2">
+<C c="34" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="stu_name"/>
 <Complex/>
@@ -1411,7 +1429,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="34" r="2" s="2">
+<C c="35" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="stu_grade"/>
 <Complex/>
@@ -1420,7 +1438,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="35" r="2" s="2">
+<C c="36" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="stu_grade_department"/>
 <Complex/>
@@ -1429,7 +1447,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="36" r="2" s="2">
+<C c="37" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="create_emp_code"/>
 <Complex/>
@@ -1438,7 +1456,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="37" r="2" s="2">
+<C c="38" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="create_department_name"/>
 <Complex/>
@@ -1447,7 +1465,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="38" r="2" s="2">
+<C c="39" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="receiver_department_id"/>
 <Complex/>
@@ -1456,7 +1474,7 @@ else
 </O>
 <Expand dir="0"/>
 </C>
-<C c="39" r="2" s="2">
+<C c="40" r="2" s="2">
 <O t="DSColumn">
 <Attributes dsName="ds1" columnName="receiver_department_name"/>
 <Complex/>
