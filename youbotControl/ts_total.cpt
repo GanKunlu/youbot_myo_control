@@ -1,0 +1,2220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WorkBook xmlVersion="20131111" releaseVersion="7.0.5">
+<TableDataMap>
+<TableData name="ds1" class="com.fr.data.impl.DBTableData">
+<Parameters>
+<Parameter>
+<Attributes name="create_emp"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="operation_type_id"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="area_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="operation_type_id_1"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="start_date2"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="start_date1"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="stu_product_name"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="receiver_emp_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="zp_times_2"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="gd_status"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="operation_type_id_3"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="yw_type"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="title"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="zp_times_1"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="urgency_level"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="work_order_id"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="orderby"/>
+<O>
+<![CDATA[desc]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="stu_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="cname"/>
+<O>
+<![CDATA[t.start_date]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="first_read"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+</Parameters>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT 
+  t.work_order_id,
+  -- 投诉单id,
+  t.create_emp_code,
+  -- 创建人员工编号,
+  t.create_emp_name,
+  -- 客服人员姓名,
+  create_department_name,
+  -- 创建人部门名称,
+  receiver_emp_code,
+  -- 受理人id,
+  receiver_emp_name,
+  -- 受理人姓名,
+  receiver_department_id,
+  -- 受理人部门编号,
+  receiver_department_name,
+  -- 受理人部门名称,
+  stu_id,
+  -- 学员ID,
+  stu_name,
+  -- 学员姓名,
+  t2.dic_name stu_grade,
+  -- 学员年级,
+  t8.dic_name stu_grade_department,
+  -- 学员年部,
+  stu_code,
+  -- 学员编号,
+  informer_name,
+  -- 投诉人称呼,
+  informer_tel,
+  -- 投诉电话,
+  t3.dic_name type_id,
+  -- 投诉类型,
+  -- IFNULL(title,'未填写主题') title,
+  IFNULL(SUBSTR(digest,1,16),'未填写内容') title,
+  -- 投诉主题,
+  digest,
+  -- 投诉内容摘要,
+  t1.dic_name area_code,
+  -- 分校,
+  start_url,
+  -- 投诉首次录音地址及时长,
+  call_url,
+  -- 投诉回访录音地址及时长,
+  voice_to_character,
+  -- 语音转文字,
+  t5.dic_name urgency_level,
+  -- 紧急程度,
+  t7.dic_name call_back_remind,
+  -- 回电提醒,
+  call_phone,
+  -- 回电电话,
+  call_phone_date,
+  -- 要求回电时间,
+  com_satisfaction_id,
+  -- 工单满意度,
+  t4.dic_name com_satisfaction_name,
+  -- 工单满意度名称,
+  start_date,
+  -- 工单创建时间,
+  t.finish_date,
+  -- 工单解决时间,
+  FROM_UNIXTIME(t.update_date) update_date,
+  -- 工单处理时间,
+  t10.first_duration,
+  -- 首响时间,
+ (CASE
+  WHEN  t.STATUS=1 OR t.status=6   THEN 
+  ROUND((UNIX_TIMESTAMP(NOW())-t10.create_date+t10.deal_duration)/60/60,1)
+  ELSE 
+  ROUND(t10.deal_duration/60/60,1) 
+  END) retention_time,-- 解决滞留时长
+  /*(CASE
+  WHEN  t.STATUS=1 OR t.status=6   THEN 
+  ROUND((UNIX_TIMESTAMP(NOW())-t10.create_date+t10.deal_duration)/60,1)
+  ELSE 
+  ROUND(t10.deal_duration/60,1) 
+  END) retention_time,-- 解决滞留时长*/
+  /*
+ (CASE 
+ WHEN ROUND(t10.deal_duration/60,1)> ROUND(((CASE 
+ WHEN  t.STATUS=3 OR t.status=5 OR t.status=4  THEN 
+ t.update_date
+ ELSE 
+ UNIX_TIMESTAMP(NOW())
+ END)-UNIX_TIMESTAMP(start_date))/60,1)  THEN 
+ ROUND(t10.deal_duration/60,1)
+ ELSE
+  ROUND(((CASE 
+ WHEN  t.STATUS=3 OR t.status=5 OR t.status=4   THEN 
+ t.update_date
+ ELSE 
+ UNIX_TIMESTAMP(NOW())
+ END)-UNIX_TIMESTAMP(start_date))/60,1)
+ END) retention_time_tol*/
+ (CASE 
+ WHEN ROUND(t10.deal_duration/60/60,1)> ROUND(((CASE 
+ WHEN  t.STATUS=3 OR t.status=5 OR t.status=4  THEN 
+ t.update_date
+ ELSE 
+ UNIX_TIMESTAMP(NOW())
+ END)-UNIX_TIMESTAMP(start_date))/60/60,1)  THEN 
+ ROUND(t10.deal_duration/60/60,1)
+ ELSE
+  ROUND(((CASE 
+ WHEN  t.STATUS=3 OR t.status=5 OR t.status=4   THEN 
+ t.update_date
+ ELSE 
+ UNIX_TIMESTAMP(NOW())
+ END)-UNIX_TIMESTAMP(start_date))/60/60,1)
+ END) retention_time_tol,
+  expectation_date,
+  -- 期望解决时间,
+  t9.dic_name gd_status,
+  --  工单状态,
+  (
+    CASE
+      t.invoking_id 
+      WHEN 1 
+      THEN "电话客服" 
+      WHEN 2 
+      THEN "学而思APP" 
+      WHEN 3 
+      THEN "钉钉" 
+      WHEN 4 
+      THEN "在线客服" 
+      ELSE "" 
+    END
+  ) invoking_id,
+  --  投诉来源,
+  t6.dic_name operation_type_id,
+  --  工单投诉类型,
+  (
+    CASE
+      t.first_read 
+      WHEN 1 
+      THEN "已读" 
+      WHEN 0 
+      THEN "未读" 
+      ELSE "" 
+    END
+  ) first_read, --  是否已读  
+  t.digest,
+  t12.action_desc,
+  t13.dic_name type_sub_name,
+  t14.dic_name stu_product_name,
+  t15.dic_name stu_subject_name,
+  SUBSTRING_INDEX(SUBSTRING_INDEX(t.start_url,'",',1),':"',-1) file_url,
+  t.send_count,  -- 指派次数
+  t31.dic_name type_name1 -- 一级工单类型
+FROM
+  tb_com_work_order t 
+  LEFT JOIN 
+  tb_com_work_order_stat t10
+   ON t10.work_order_id=t.work_order_id
+  LEFT JOIN 
+  (SELECT 
+  a.work_order_id,
+  a.create_emp_code,
+  a.action_desc 
+FROM
+  tb_com_work_order_action a 
+WHERE (a.work_order_id,a.create_emp_code,a.create_date) IN 
+  (SELECT 
+    work_order_id,
+    create_emp_code,
+    MAX(create_date) 
+  FROM
+    tb_com_work_order_action 
+  GROUP BY create_emp_code,work_order_id)) t12
+  ON t12.work_order_id=t.work_order_id
+  AND t12.create_emp_code=t.receiver_emp_code
+  INNER JOIN tb_com_dic t1
+    ON t1.dic_value = area_code 
+    AND t1.description = '分校'
+    AND t.app_id=t1.app_id
+  LEFT JOIN tb_com_dic t2
+    ON t2.dic_value = stu_grade 
+    AND t2.description = '年级' 
+    AND t.app_id=t2.app_id
+  LEFT JOIN tb_com_dic t3
+    ON t3.dic_value = type_id 
+    AND t3.description = '工单二级分类' 
+    AND t.app_id=t3.app_id
+  LEFT JOIN tb_com_dic t31
+    ON t31.dic_value =t.type_parent_id 
+    AND t31.description = '工单一级分类' 
+    AND t.app_id=t31.app_id
+  LEFT JOIN tb_com_dic t4
+    ON t4.dic_value = com_satisfaction_id 
+    AND t4.description = '满意程度' 
+    AND t.app_id=t4.app_id
+  LEFT JOIN tb_com_dic t5
+    ON t5.dic_value = urgency_level 
+    AND t5.description = '紧急程度' 
+    AND t.app_id=t5.app_id
+  LEFT JOIN tb_com_dic t6
+    ON t6.dic_value = operation_type_id 
+    AND t6.description = '投诉类型' 
+    AND t.app_id=t6.app_id
+  LEFT JOIN tb_com_dic t7
+    ON t7.dic_value = call_back_remind 
+    AND t7.description = '回电提醒种类' 
+    AND t.app_id=t7.app_id
+  LEFT JOIN tb_com_dic t8
+    ON t8.dic_value = stu_grade_department 
+    AND t8.description = '学部种类'    
+    AND t.app_id=t8.app_id
+  LEFT JOIN tb_com_dic t9
+    ON t9.dic_value =t.STATUS 
+    AND t9.description = '工单状态'  
+    AND t.app_id=t9.app_id   
+    LEFT JOIN tb_com_dic t13
+    ON t13.dic_value =t.type_sub_id  
+     AND t13.description = '工单三级分类'  
+    AND t.app_id=t13.app_id  
+   LEFT JOIN tb_com_dic t14
+    ON t14.dic_value =t.stu_product 
+    AND t14.description = '产品类型' 
+    AND t.app_id=t14.app_id 
+   LEFT JOIN tb_com_dic t15
+    ON t15.dic_value =t.stu_subject 
+    AND t15.description = '学科'  
+    AND t.app_id=t15.app_id            
+WHERE 1=1
+AND t.status != 4 
+AND t.app_id='speiyou' -- speiyou,izhikang,lewaijiao
+AND t.stu_product<>'SP4'
+-- and t.work_order_id='1711091521' 
+${IF(len(start_date1) == 0, "", "and t.start_date>= date_format('" + start_date1 + "','%Y-%m-%d 00:00:00')") }
+${IF(len(start_date2) == 0, "", "and t.start_date<= date_format('" + start_date2 + "','%Y-%m-%d 24:00:00')") }
+${IF(len(zp_times_1) == 0, "", "and t.send_count>=" + zp_times_1 + "") }
+${IF(len(zp_times_2) == 0, "", "and t.send_count<=" + zp_times_2 + "") }
+${IF(len(operation_type_id_1) == 0, "", "and t.type_parent_id in ('" + operation_type_id_1 + "')") }
+${IF(len(operation_type_id_3) == 0, "", "and t.type_sub_id in ('" + operation_type_id_3 + "')") }
+${IF(len(stu_product_name) == 0, "", "and t14.dic_name in ('" + stu_product_name + "')") }
+${IF(len(area_code) == 0, "", "and t1.dic_name in ('" + area_code + "')") }
+-- ${IF(len(yw_type) == 0, "", "and t.yw_type in ('" + yw_type + "')") }
+${IF(len(gd_status) == 0, "", "and t.STATUS in ('" + gd_status + "')") }
+${IF(len(operation_type_id) == 0, "", "and t.type_id in ('" + operation_type_id + "')") }
+${IF(len(urgency_level) == 0, "", "and t.urgency_level in ('" + urgency_level + "')") }
+${IF(len(first_read) == 0, "", "and t.first_read in ('" + first_read + "')") }
+${IF(len(work_order_id) == 0, "", "and t.work_order_id = ('" + work_order_id + "')") }
+${IF(len(receiver_emp_code) == 0, "", "and (t.receiver_emp_code like ('%" + receiver_emp_code + "%') or t.receiver_emp_name like ('%" + receiver_emp_code + "%')  )") }
+${IF(len(stu_code) == 0, "", "and (t.stu_code like ('%" + stu_code + "%') or t.stu_name like ('%" + stu_code + "%')  )") }
+${IF(len(create_emp) == 0, "", "and t.create_emp_name = ('" + create_emp + "')") }
+${IF(len(title) == 0, "", "and t.digest like ('%" + title + "%')") }
+-- ORDER BY  t.start_date DESC
+ORDER BY  ${cname} ${orderby}]]></Query>
+</TableData>
+<TableData name="gd_type" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT dic_value,dic_name
+FROM tb_com_dic 
+WHERE  description = '工单二级分类' 
+and app_id='speiyou']]></Query>
+</TableData>
+<TableData name="read_if" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[ SELECT 1 first_read,'已读' first_read_name
+    FROM DUAL 
+    UNION ALL 
+    SELECT 0 first_read,'未读' first_read_name
+    FROM DUAL 
+    ]]></Query>
+</TableData>
+<TableData name="yw_type" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[ SELECT 1 type_id,'面授' type_name
+    FROM DUAL 
+    UNION ALL 
+    SELECT 2 type_id,'在线' type_name
+    FROM DUAL ]]></Query>
+</TableData>
+<TableData name="urgency" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT 
+  dic_value,
+  dic_name,
+  description
+FROM
+  tb_com_dic 
+WHERE description = '紧急程度' ]]></Query>
+</TableData>
+<TableData name="city" class="com.fr.data.impl.DBTableData">
+<Parameters>
+<Parameter>
+<Attributes name="USER_ID"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+</Parameters>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[xesbidw]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[ select tmp.city_code dic_value , tmp.city_name dic_name
+  from (select tcc.city_code, tcc.city_name, tcc.city_order,tcc.city_id
+          from tb_city_config tcc
+         where exists (select 1 from bus_authority_t bat
+                 where bat.user_id ='${USER_ID}'
+                   and bat.all_flag = 1
+                   and bat.bus_id = '1') 
+        union
+        select tcc.city_code, tcc.city_name, tcc.city_order,tcc.city_id
+          from tb_city_config tcc
+         where exists (select 1 from city_authority_t cat
+                  where cat.city_id=tcc.city_id
+                   and cat.user_id ='${USER_ID}'   
+                   and bus_id = '1')) tmp 
+   where tmp.city_id>=1     
+ order by tmp.city_order]]></Query>
+</TableData>
+<TableData name="gd_status" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT 
+  dic_value,
+  dic_name,
+  description
+FROM
+  tb_com_dic 
+WHERE description = '工单状态' ]]></Query>
+</TableData>
+<TableData name="stu_product" class="com.fr.data.impl.DBTableData">
+<Parameters>
+<Parameter>
+<Attributes name="USER_ID"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+</Parameters>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[xesbidw]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[select l.line_name dic_name
+    from line_t l
+    where exists (select 1 from line_authority_t la
+                  where la.line_id = l.line_id
+                    and la.user_id = '${USER_ID}')
+      and l.line_name<>'全部'
+    order by l.line_order]]></Query>
+</TableData>
+<TableData name="gd_type1" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT dic_value,dic_name
+FROM tb_com_dic 
+WHERE  description = '工单一级分类' 
+and app_id='speiyou']]></Query>
+</TableData>
+<TableData name="gd_type3" class="com.fr.data.impl.DBTableData">
+<Parameters/>
+<Attributes maxMemRowCount="-1"/>
+<Connection class="com.fr.data.impl.NameDatabaseConnection">
+<DatabaseName>
+<![CDATA[complaint_mysql]]></DatabaseName>
+</Connection>
+<Query>
+<![CDATA[SELECT dic_value,dic_name
+FROM tb_com_dic 
+WHERE  description = '工单三级分类' 
+and app_id='speiyou']]></Query>
+</TableData>
+</TableDataMap>
+<ReportWebAttr>
+<ServerPrinter/>
+<WebPageContent>
+<Listener event="afterload">
+<JavaScript class="com.fr.js.JavaScriptImpl">
+<Parameters/>
+<Content>
+<![CDATA[var background_color = "rgb(0)"; //滑动新背景色  
+var click_background_color = "rgb(29,130,254)"; //点击新背景色  
+var frozen_back_color = new Array();  
+var back_color = new Array();  
+var click_frozen_back_color = new Array();  
+var click_back_color = new Array();  
+var $last_tr;  
+var $last_click_tr;  
+var i = 0;  
+var j = 0;  
+$(".x-table tr[id]A").bind("mouseenter", function () {  
+    if (typeof($last_tr) != "undefined") {  
+        if (typeof($last_click_tr) == "undefined" || (typeof($last_click_tr) != "undefined" && $last_tr.attr("id") != $last_click_tr.attr("id"))) {  
+            if (typeof($(this).attr("id")) != "undefined") {  
+                if (typeof($("#content-container #frozen-west").attr("id")) != "undefined") {  
+                    $("#content-container #" + $last_tr.attr("id")).each(function () {  
+                        $(this).children("td").each(function () {  
+                            $(this).css("background-color", frozen_back_color[i]A[$(this).index()]A);  
+                        });  
+                        i = i + 1;  
+                    });  
+                    i = 0;  
+                } else {  
+                    $last_tr.children("td").each(function () {  
+                        $(this).css("background-color", back_color[$(this).index()]A);  
+                    });  
+                }  
+                frozen_back_color = []A;  
+                back_color = []A;  
+            }  
+        }  
+    }  
+    if (typeof($(this).attr("id")) != "undefined" && (typeof($last_click_tr) == "undefined" || (typeof($last_click_tr) != "undefined" && $(this).attr("id") != $last_click_tr.attr("id")))) {  
+        if (typeof($("#content-container #frozen-west").attr("id")) != "undefined") {  
+            $("#content-container #" + $(this).attr("id")).each(function () {  
+                frozen_back_color[i]A = new Array();  
+                $(this).children("td").each(function () {  
+                    frozen_back_color[i]A[$(this).index()]A = $(this).css("background-color");  
+                    $(this).css("background-color", background_color);  
+                });  
+                i = i + 1;  
+            });  
+            i = 0;  
+        } else {  
+            $(this).children("td").each(function () {  
+                back_color[$(this).index()]A = $(this).css("background-color");  
+                $(this).css("background-color", background_color);  
+            });  
+        }  
+    }  
+    $last_tr = $(this);  
+});  
+$(".x-table tr[id]A").bind("mousedown", function () {  
+  
+    if (typeof($last_click_tr) != "undefined") {  
+        if ($(this).attr("id") != $last_click_tr.attr("id")) {  
+            if (typeof($(this).attr("id")) != "undefined") {  
+                if (typeof($("#content-container #frozen-west").attr("id")) != "undefined") {  
+                    $("#content-container #" + $last_click_tr.attr("id")).each(function () {  
+                        $(this).children("td").each(function () {  
+                            $(this).css("background-color", click_frozen_back_color[j]A[$(this).index()]A);  
+                        });  
+                        j = j + 1;  
+                    });  
+                    j = 0;  
+                } else {  
+                    $last_click_tr.children("td").each(function () {  
+                        $(this).css("background-color", click_back_color[$(this).index()]A);  
+                    });  
+                }  
+                click_frozen_back_color = []A;  
+  
+                click_back_color = []A;  
+            }  
+        }  
+    }  
+    if (typeof($(this).attr("id")) != "undefined" && (typeof($last_click_tr) == "undefined" || (typeof($last_click_tr) != "undefined" && $(this).attr("id") != $last_click_tr.attr("id")))) {  
+        click_frozen_back_color = frozen_back_color.slice();  
+  
+        click_back_color = back_color.slice();  
+  
+        if (typeof($("#content-container #frozen-west").attr("id")) != "undefined") {  
+            $("#content-container #" + $(this).attr("id")).each(function () {  
+                $(this).children("td").each(function () {  
+                    $(this).css("background-color", click_background_color);  
+                });  
+            });  
+        } else {  
+            $(this).children("td").each(function () {  
+                $(this).css("background-color", click_background_color);  
+            });  
+        }  
+    }  
+    $last_click_tr = $(this);  
+}); ]]></Content>
+</JavaScript>
+</Listener>
+<ToolBars>
+<ToolBarManager>
+<Location>
+<Embed position="1"/>
+</Location>
+<ToolBar>
+<Widget class="com.fr.report.web.button.page.First">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('ReportServerP-First')}]]></Text>
+<IconName>
+<![CDATA[first]]></IconName>
+</Widget>
+<Widget class="com.fr.report.web.button.page.Previous">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('ReportServerP-Previous')}]]></Text>
+<IconName>
+<![CDATA[previous]]></IconName>
+</Widget>
+<Widget class="com.fr.report.web.button.page.PageNavi">
+<WidgetAttr/>
+</Widget>
+<Widget class="com.fr.report.web.button.page.Next">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('ReportServerP-Next')}]]></Text>
+<IconName>
+<![CDATA[next]]></IconName>
+</Widget>
+<Widget class="com.fr.report.web.button.page.Last">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('ReportServerP-Last')}]]></Text>
+<IconName>
+<![CDATA[last]]></IconName>
+</Widget>
+<Widget class="com.fr.report.web.button.FlashPrint">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('Utils-Print[Client]A')}]]></Text>
+<IconName>
+<![CDATA[flashprint]]></IconName>
+</Widget>
+<Widget class="com.fr.report.web.button.Print">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('Print')}]]></Text>
+<IconName>
+<![CDATA[print]]></IconName>
+<PrintButtons/>
+</Widget>
+<Widget class="com.fr.report.web.button.Export">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('Export')}]]></Text>
+<IconName>
+<![CDATA[export]]></IconName>
+<Buttons pdf="true" excelP="true" excelO="true" excelS="true" word="true" image="true" html="true"/>
+</Widget>
+<Widget class="com.fr.report.web.button.Email">
+<WidgetAttr/>
+<Text>
+<![CDATA[${i18n('Email')}]]></Text>
+<IconName>
+<![CDATA[email]]></IconName>
+</Widget>
+</ToolBar>
+</ToolBarManager>
+</ToolBars>
+<WebPage isPage="false" isShowAsImage="false" isAutoScale="false" isTDHeavy="false"/>
+</WebPageContent>
+</ReportWebAttr>
+<ReportExportAttr>
+<ExcelExportAttr hideRow="false"/>
+<PDFExportAttr/>
+<HTMLExportAttr/>
+<WordExportAttr/>
+</ReportExportAttr>
+<Report class="com.fr.report.worksheet.WorkSheet" name="sheet1">
+<ReportPageAttr>
+<HR F="1" T="1"/>
+<FR/>
+<HC/>
+<FC/>
+<UPFCR COLUMN="false" ROW="true"/>
+</ReportPageAttr>
+<RowHeight defaultValue="723900">
+<![CDATA[0,1143000,723900,723900,723900,723900,723900,723900,723900,723900,723900]]></RowHeight>
+<ColumnWidth defaultValue="2743200">
+<![CDATA[6896100,2743200,2438400,2743200,2743200,2743200,4038600,8077200,0,2705100,0,2743200,4533900,4762500,4762500,3962400,3924300,0,2971800,3848100,3543300,18897600,4914900,5676900,2743200,4648200,2743200,3543300,2895600,2743200,3086100,3048000,2743200,2743200,2743200,2743200,3048000,12915900,4876800,15201900,2743200]]></ColumnWidth>
+<CellElementList>
+<C c="0" r="0">
+<Expand/>
+</C>
+<C c="1" r="0" s="0">
+<Expand/>
+</C>
+<C c="2" r="0" s="0">
+<Expand/>
+</C>
+<C c="5" r="0" s="0">
+<Expand/>
+</C>
+<C c="7" r="0" s="0">
+<Expand/>
+</C>
+<C c="8" r="0" s="0">
+<Expand/>
+</C>
+<C c="11" r="0" s="0">
+<Expand/>
+</C>
+<C c="12" r="0" s="0">
+<Expand/>
+</C>
+<C c="13" r="0" s="0">
+<Expand/>
+</C>
+<C c="15" r="0" s="0">
+<Expand/>
+</C>
+<C c="22" r="0" s="0">
+<Expand/>
+</C>
+<C c="23" r="0" s="0">
+<Expand/>
+</C>
+<C c="24" r="0" s="0">
+<Expand/>
+</C>
+<C c="25" r="0" s="0">
+<Expand/>
+</C>
+<C c="26" r="0" s="0">
+<Expand/>
+</C>
+<C c="27" r="0" s="0">
+<Expand/>
+</C>
+<C c="28" r="0" s="0">
+<Expand/>
+</C>
+<C c="29" r="0" s="0">
+<Expand/>
+</C>
+<C c="30" r="0" cs="10" s="0">
+<HighlightList>
+<Highlight class="com.fr.report.cell.cellattr.highlight.DefaultHighlight">
+<Name>
+<![CDATA[条件属性1]]></Name>
+<Condition class="com.fr.data.condition.FormulaCondition">
+<Formula>
+<![CDATA[$full_class_c != "true"]]></Formula>
+</Condition>
+<HighlightAction class="com.fr.report.cell.cellattr.highlight.ColWidthHighlightAction"/>
+</Highlight>
+</HighlightList>
+<Expand/>
+</C>
+<C c="0" r="1" s="0">
+<O>
+<![CDATA[业务线]]></O>
+<Expand/>
+</C>
+<C c="1" r="1" s="1">
+<O>
+<![CDATA[工单号]]></O>
+<NameJavaScriptGroup>
+<NameJavaScript name="升序">
+<JavaScript class="com.fr.js.ParameterJavaScript">
+<Parameters>
+<Parameter>
+<Attributes name="orderby"/>
+<O>
+<![CDATA[asc]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="cname"/>
+<O>
+<![CDATA[work_order_id]]></O>
+</Parameter>
+</Parameters>
+</JavaScript>
+</NameJavaScript>
+<NameJavaScript name="降序">
+<JavaScript class="com.fr.js.ParameterJavaScript">
+<Parameters>
+<Parameter>
+<Attributes name="orderby"/>
+<O>
+<![CDATA[desc]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="cname"/>
+<O>
+<![CDATA[work_order_id]]></O>
+</Parameter>
+</Parameters>
+</JavaScript>
+</NameJavaScript>
+</NameJavaScriptGroup>
+<Expand/>
+</C>
+<C c="2" r="1" s="0">
+<O>
+<![CDATA[分校]]></O>
+<Expand/>
+</C>
+<C c="3" r="1" s="0">
+<O>
+<![CDATA[学科]]></O>
+<Expand/>
+</C>
+<C c="4" r="1" s="0">
+<O>
+<![CDATA[一级分类]]></O>
+<Expand/>
+</C>
+<C c="5" r="1" s="0">
+<O>
+<![CDATA[二级分类]]></O>
+<Expand/>
+</C>
+<C c="6" r="1" s="0">
+<O>
+<![CDATA[三级分类]]></O>
+<Expand/>
+</C>
+<C c="7" r="1" s="0">
+<O>
+<![CDATA[投诉内容]]></O>
+<Expand/>
+</C>
+<C c="8" r="1" s="0">
+<O>
+<![CDATA[投诉内容详情]]></O>
+<Expand/>
+</C>
+<C c="9" r="1" s="0">
+<O>
+<![CDATA[录音]]></O>
+<Expand/>
+</C>
+<C c="10" r="1" s="0">
+<O>
+<![CDATA[录音文件地址]]></O>
+<Expand/>
+</C>
+<C c="11" r="1" s="0">
+<O>
+<![CDATA[处理状态]]></O>
+<Expand/>
+</C>
+<C c="12" r="1" s="1">
+<O>
+<![CDATA[投诉发起时间]]></O>
+<NameJavaScriptGroup>
+<NameJavaScript name="升序">
+<JavaScript class="com.fr.js.ParameterJavaScript">
+<Parameters>
+<Parameter>
+<Attributes name="orderby"/>
+<O>
+<![CDATA[asc]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="cname"/>
+<O>
+<![CDATA[start_date]]></O>
+</Parameter>
+</Parameters>
+</JavaScript>
+</NameJavaScript>
+<NameJavaScript name="降序">
+<JavaScript class="com.fr.js.ParameterJavaScript">
+<Parameters>
+<Parameter>
+<Attributes name="orderby"/>
+<O>
+<![CDATA[desc]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="cname"/>
+<O>
+<![CDATA[start_date]]></O>
+</Parameter>
+</Parameters>
+</JavaScript>
+</NameJavaScript>
+</NameJavaScriptGroup>
+<Expand/>
+</C>
+<C c="13" r="1" s="0">
+<O>
+<![CDATA[内部解决时间]]></O>
+<Expand/>
+</C>
+<C c="14" r="1" s="0">
+<O>
+<![CDATA[最后操作时间]]></O>
+<Expand/>
+</C>
+<C c="15" r="1" s="0">
+<O>
+<![CDATA[内部解决时长(h)]]></O>
+<Expand/>
+</C>
+<C c="16" r="1" s="0">
+<O>
+<![CDATA[工单处理时长(h)]]></O>
+<Expand/>
+</C>
+<C c="17" r="1" s="0">
+<O>
+<![CDATA[首响时长]]></O>
+<Expand/>
+</C>
+<C c="18" r="1" s="0">
+<O>
+<![CDATA[指派次数]]></O>
+<Expand/>
+</C>
+<C c="19" r="1" s="0">
+<O>
+<![CDATA[当前处理人编号]]></O>
+<Expand/>
+</C>
+<C c="20" r="1" s="0">
+<O>
+<![CDATA[当前处理人]]></O>
+<Expand/>
+</C>
+<C c="21" r="1" s="0">
+<O>
+<![CDATA[处理结果]]></O>
+<Expand/>
+</C>
+<C c="22" r="1" s="0">
+<O>
+<![CDATA[预计解决时间]]></O>
+<Expand/>
+</C>
+<C c="23" r="1" s="0">
+<O>
+<![CDATA[回电提醒]]></O>
+<Expand/>
+</C>
+<C c="24" r="1" s="0">
+<O>
+<![CDATA[回电电话]]></O>
+<Expand/>
+</C>
+<C c="25" r="1" s="0">
+<O>
+<![CDATA[期望回电时间]]></O>
+<Expand/>
+</C>
+<C c="26" r="1" s="0">
+<O>
+<![CDATA[投诉来源]]></O>
+<Expand/>
+</C>
+<C c="27" r="1" s="0">
+<O>
+<![CDATA[紧急程度]]></O>
+<Expand/>
+</C>
+<C c="28" r="1" s="0">
+<O>
+<![CDATA[是否已读]]></O>
+<Expand/>
+</C>
+<C c="29" r="1" s="0">
+<O>
+<![CDATA[创建人姓名]]></O>
+<Expand/>
+</C>
+<C c="30" r="1" s="0">
+<O>
+<![CDATA[投诉电话]]></O>
+<Expand/>
+</C>
+<C c="31" r="1" s="0">
+<O>
+<![CDATA[工单投诉类型]]></O>
+<Expand/>
+</C>
+<C c="32" r="1" s="0">
+<O>
+<![CDATA[学员编号]]></O>
+<Expand/>
+</C>
+<C c="33" r="1" s="0">
+<O>
+<![CDATA[学员姓名]]></O>
+<Expand/>
+</C>
+<C c="34" r="1" s="0">
+<O>
+<![CDATA[学员年级]]></O>
+<Expand/>
+</C>
+<C c="35" r="1" s="0">
+<O>
+<![CDATA[学员年部]]></O>
+<Expand/>
+</C>
+<C c="36" r="1" s="0">
+<O>
+<![CDATA[创建人工号]]></O>
+<Expand/>
+</C>
+<C c="37" r="1" s="0">
+<O>
+<![CDATA[创建人部门名称]]></O>
+<Expand/>
+</C>
+<C c="38" r="1" s="0">
+<O>
+<![CDATA[当前处理人部门编号]]></O>
+<Expand/>
+</C>
+<C c="39" r="1" s="0">
+<O>
+<![CDATA[当前处理人部门名称]]></O>
+<Expand/>
+</C>
+<C c="0" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_product_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper">
+<Attr divideMode="1"/>
+</RG>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="1" r="2" s="3">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="work_order_id"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<NameJavaScriptGroup>
+<NameJavaScript name="网络报表1">
+<JavaScript class="com.fr.js.ReportletHyperlink">
+<JavaScript class="com.fr.js.ReportletHyperlink">
+<Parameters>
+<Parameter>
+<Attributes name="work_order_id"/>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=B3]]></Attributes>
+</O>
+</Parameter>
+</Parameters>
+<TargetFrame>
+<![CDATA[_blank]]></TargetFrame>
+<Features width="600" height="400"/>
+<ReportletName byPost="true">
+<![CDATA[ts_bi_totalmx1.cpt]]></ReportletName>
+</JavaScript>
+</JavaScript>
+</NameJavaScript>
+</NameJavaScriptGroup>
+<Expand dir="0"/>
+</C>
+<C c="2" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="area_code"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper">
+<Attr divideMode="1"/>
+</RG>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="3" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_subject_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="4" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="type_name1"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="5" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="type_id"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="6" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="type_sub_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="7" r="2" s="4">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="title"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<NameJavaScriptGroup>
+<NameJavaScript name="网络报表1">
+<JavaScript class="com.fr.js.ReportletHyperlink">
+<JavaScript class="com.fr.js.ReportletHyperlink">
+<Parameters>
+<Parameter>
+<Attributes name="work_order_id"/>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=B3]]></Attributes>
+</O>
+</Parameter>
+</Parameters>
+<TargetFrame>
+<![CDATA[_dialog]]></TargetFrame>
+<Features width="850" height="300"/>
+<ReportletName byPost="true">
+<![CDATA[ts_bi_totalmx2.cpt]]></ReportletName>
+</JavaScript>
+</JavaScript>
+</NameJavaScript>
+</NameJavaScriptGroup>
+<Expand dir="0"/>
+</C>
+<C c="8" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="digest"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="9" r="2" s="3">
+<O>
+<![CDATA[播放]]></O>
+<NameJavaScriptGroup>
+<NameJavaScript name="JavaScript1">
+<JavaScript class="com.fr.js.JavaScriptImpl">
+<Parameters>
+<Parameter>
+<Attributes name="url"/>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=IF(ISNULL(K3), 999, K3)]]></Attributes>
+</O>
+</Parameter>
+</Parameters>
+<Content>
+<![CDATA[if (url==999)
+  {
+  // window.open("测得的");
+   alert('该录音为空');
+  }
+else
+{
+   window.open("http://"+url);
+   //window.location.href="http://"+url;
+
+}]]></Content>
+</JavaScript>
+</NameJavaScript>
+</NameJavaScriptGroup>
+<Expand/>
+</C>
+<C c="10" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="file_url"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="11" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="gd_status"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="12" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="start_date"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="13" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="finish_date"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="14" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="update_date"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="15" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="retention_time"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="16" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="retention_time_tol"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="18" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="send_count"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="19" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="receiver_emp_code"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="20" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="receiver_emp_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="21" r="2" s="5">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="action_desc"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="22" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="expectation_date"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="23" r="2" s="5">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="call_back_remind"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="24" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="call_phone"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="25" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="call_phone_date"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="26" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="invoking_id"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="27" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="urgency_level"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="28" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="first_read"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="29" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="create_emp_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="30" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="informer_tel"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="31" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="operation_type_id"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="32" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_code"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="33" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="34" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_grade"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="35" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="stu_grade_department"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="36" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="create_emp_code"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="37" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="create_department_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="38" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="receiver_department_id"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+<C c="39" r="2" s="2">
+<O t="DSColumn">
+<Attributes dsName="ds1" columnName="receiver_department_name"/>
+<Complex/>
+<RG class="com.fr.report.cell.cellattr.core.group.FunctionGrouper"/>
+<Parameters/>
+</O>
+<Expand dir="0"/>
+</C>
+</CellElementList>
+<ReportAttrSet>
+<ReportSettings headerHeight="0" footerHeight="0">
+<PaperSetting orientation="1">
+<PaperSize width="126720000" height="172800000"/>
+<Margin top="288000" left="432000" bottom="288000" right="432000"/>
+</PaperSetting>
+</ReportSettings>
+<Header reportPageType="0">
+<Background name="NullBackground"/>
+<LeftList/>
+<CenterList/>
+<RightList/>
+</Header>
+<Footer reportPageType="0">
+<Background name="NullBackground"/>
+<LeftList/>
+<CenterList/>
+<RightList/>
+</Footer>
+</ReportAttrSet>
+</Report>
+<ReportParameterAttr>
+<Attributes showWindow="true" delayPlaying="true" windowPosition="1" align="0"/>
+<PWTitle>
+<![CDATA[参数]]></PWTitle>
+<ParameterUI class="com.fr.form.main.parameter.FormParameterUI">
+<Layout class="com.fr.form.ui.container.WAbsoluteLayout">
+<WidgetName name="para"/>
+<WidgetAttr/>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelarea_code"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[分校:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="191" y="3" width="86" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="area_code"/>
+<WidgetAttr/>
+<EMSG>
+<![CDATA[分校不能为空]]></EMSG>
+<allowBlank>
+<![CDATA[false]]></allowBlank>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="DIC_NAME" viName="DIC_NAME"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[city]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[= sql("xesbidw","
+  select tmp.city_id, tmp.city_name, tmp.city_order
+  from (select tcc.city_id, tcc.city_name, tcc.city_order
+          from tb_city_config tcc
+         where exists (select 1 from bus_authority_t bat
+                 where bat.user_id ='"+$USER_ID+"'
+                   and bat.all_flag = 1
+                   and bat.bus_id = '1') 
+        union
+        select tcc.city_id, tcc.city_name, tcc.city_order
+          from tb_city_config tcc
+         where exists (select 1 from city_authority_t cat
+                  where cat.city_id=tcc.city_id
+                   and cat.user_id = '"+$USER_ID+"'    
+                   and bus_id = '1')) tmp 
+ where tmp.city_id>=1     
+ order by tmp.city_order",2,1)]]></Attributes>
+</O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="277" y="3" width="119" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.parameter.FormSubmitButton">
+<WidgetName name="Search"/>
+<WidgetAttr/>
+<Text>
+<![CDATA[查询]]></Text>
+<Hotkeys>
+<![CDATA[enter]]></Hotkeys>
+</InnerWidget>
+<BoundsAttr x="277" y="87" width="103" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelfirst_read"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[是否已读:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="841" y="60" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="first_read"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="first_read" viName="first_read_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[read_if]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="902" y="60" width="169" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelwork_order_id"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[工单号:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="21" y="32" width="46" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="work_order_id"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="67" y="32" width="118" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelstu_code"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[学生编号或名称:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="621" y="32" width="96" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="stu_code"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="717" y="32" width="112" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labeltitle"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[投诉内容:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="191" y="32" width="86" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="title"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="277" y="32" width="119" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelstart_date1"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[起始日期:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="21" y="60" width="56" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.DateEditor">
+<WidgetName name="start_date1"/>
+<WidgetAttr/>
+<DateAttr/>
+<widgetValue>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=TODAY()-1]]></Attributes>
+</O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="77" y="60" width="108" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelinvoking_id"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" noWrap="true" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[一级分类:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="408" y="3" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="operation_type_id_1"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="dic_value" viName="dic_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[gd_type1]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="469" y="3" width="139" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelstart_date2"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[截止日期:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="191" y="60" width="86" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.DateEditor">
+<WidgetName name="start_date2"/>
+<WidgetAttr/>
+<DateAttr/>
+<widgetValue>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=TODAY()]]></Attributes>
+</O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="277" y="60" width="119" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelgd_status"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[工单状态:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="408" y="60" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="gd_status"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="dic_value" viName="dic_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[gd_status]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="469" y="60" width="139" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelurgency_level"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[紧急程度:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="621" y="60" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="urgency_level"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="dic_value" viName="dic_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[urgency]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="682" y="60" width="147" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelreceiver_emp_code"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[处理人编号或名称:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="841" y="32" width="110" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="receiver_emp_code"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="951" y="32" width="120" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Label_22_c_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[隐藏/显示:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="21" y="114" width="62" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Label_23_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[全部]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="101" y="114" width="26" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.CheckBox">
+<Listener event="statechange">
+<JavaScript class="com.fr.js.JavaScriptImpl">
+<Parameters/>
+<Content>
+<![CDATA[_g().parameterCommit(); ]]></Content>
+</JavaScript>
+</Listener>
+<WidgetName name="full_class_c"/>
+<WidgetAttr/>
+<widgetValue>
+<O t="B">
+<![CDATA[false]]></O>
+</widgetValue>
+<fontSize>
+<![CDATA[16]]></fontSize>
+</InnerWidget>
+<BoundsAttr x="77" y="114" width="33" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="label0_c_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="1" size="80" foreground="-65536"/>
+<widgetValue>
+<O>
+<![CDATA[数据为实时数据]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="408" y="87" width="105" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelstu_product_name"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[业务线:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="21" y="3" width="46" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="stu_product_name"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="DIC_NAME" viName="DIC_NAME"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[stu_product]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O t="Formula" class="Formula">
+<Attributes>
+<![CDATA[=sql("xesbidw","                      
+    select l.line_name cla_type,l.line_id cla_class_type
+    from line_t l
+    where exists (select 1 from line_authority_t la
+                  where la.line_id = l.line_id
+                    and la.user_id ='"+$USER_ID+"')
+  and l.line_name<>'全部'
+    order by l.line_order  
+    ",1,1)]]></Attributes>
+</O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="67" y="3" width="118" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelcreate_emp"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[创建人名称:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="408" y="32" width="71" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="create_emp"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="479" y="32" width="129" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="operation_type_id"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="dic_value" viName="dic_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[gd_type]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="682" y="3" width="147" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelinvoking_id_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" noWrap="true" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[二级分类:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="621" y="3" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.ComboCheckBox">
+<WidgetName name="operation_type_id_3"/>
+<WidgetAttr/>
+<Dictionary class="com.fr.data.impl.TableDataDictionary">
+<FormulaDictAttr kiName="dic_value" viName="dic_name"/>
+<TableDataDictAttr>
+<TableData class="com.fr.data.impl.NameTableData">
+<Name>
+<![CDATA[gd_type3]]></Name>
+</TableData>
+</TableDataDictAttr>
+</Dictionary>
+<widgetValue>
+<O>
+<![CDATA[]]></O>
+</widgetValue>
+<RAAttr delimiter="&apos;,&apos;" isArray="false"/>
+</InnerWidget>
+<BoundsAttr x="902" y="3" width="169" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelinvoking_id_c_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" noWrap="true" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[三级分类:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="841" y="3" width="61" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="zp_times_1"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[0]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="77" y="87" width="82" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="Labelwork_order_id_c"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[指派次数:]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="21" y="87" width="56" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.TextEditor">
+<WidgetName name="zp_times_2"/>
+<WidgetAttr/>
+<TextAttr/>
+<widgetValue>
+<O>
+<![CDATA[5]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="184" y="87" width="86" height="21"/>
+</Widget>
+<Widget class="com.fr.form.ui.container.WAbsoluteLayout$BoundsWidget">
+<InnerWidget class="com.fr.form.ui.Label">
+<WidgetName name="label0"/>
+<WidgetAttr/>
+<LabelAttr verticalcenter="true" textalign="0" autoline="true"/>
+<FRFont name="SimSun" style="0" size="72"/>
+<widgetValue>
+<O>
+<![CDATA[---]]></O>
+</widgetValue>
+</InnerWidget>
+<BoundsAttr x="159" y="87" width="25" height="21"/>
+</Widget>
+<LCAttr vgap="0" hgap="0"/>
+</Layout>
+<DesignAttr width="1071" height="138"/>
+</ParameterUI>
+<Parameter>
+<Attributes name="area_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="yw_type"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="urgency_level"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="gd_status"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="first_read"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="operation_type_id"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="work_order_id"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="receiver_emp_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="stu_code"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="title"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="start_date1"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="start_date2"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+<Parameter>
+<Attributes name="USER_ID"/>
+<O>
+<![CDATA[]]></O>
+</Parameter>
+</ReportParameterAttr>
+<StyleList>
+<Style style_name="td_h"/>
+<Style horizontal_alignment="0" imageLayout="1" paddingLeft="1" paddingRight="1">
+<FRFont name="SimSun" style="0" size="72" underline="1"/>
+<Background name="ColorBackground" color="-1315341"/>
+<Border>
+<Top style="1" color="-4206630"/>
+<Bottom style="1" color="-4206630"/>
+<Left style="1" color="-4206630"/>
+<Right style="1" color="-4206630"/>
+</Border>
+</Style>
+<Style style_name="td_b_c"/>
+<Style horizontal_alignment="0" imageLayout="1" paddingLeft="1" paddingRight="1">
+<FRFont name="SimSun" style="0" size="72" foreground="-16776961" underline="1"/>
+<Background name="ColorBackground" color="-1"/>
+<Border>
+<Top style="1" color="-4206630"/>
+<Bottom style="1" color="-4206630"/>
+<Left style="1" color="-4206630"/>
+<Right style="1" color="-4206630"/>
+</Border>
+</Style>
+<Style horizontal_alignment="2" imageLayout="1" paddingLeft="1" paddingRight="1">
+<FRFont name="SimSun" style="0" size="72" foreground="-16776961" underline="1"/>
+<Background name="ColorBackground" color="-1"/>
+<Border>
+<Top style="1" color="-4206630"/>
+<Bottom style="1" color="-4206630"/>
+<Left style="1" color="-4206630"/>
+<Right style="1" color="-4206630"/>
+</Border>
+</Style>
+<Style horizontal_alignment="2" imageLayout="1" paddingLeft="1" paddingRight="1">
+<FRFont name="SimSun" style="0" size="72"/>
+<Background name="ColorBackground" color="-1"/>
+<Border>
+<Top style="1" color="-4206630"/>
+<Bottom style="1" color="-4206630"/>
+<Left style="1" color="-4206630"/>
+<Right style="1" color="-4206630"/>
+</Border>
+</Style>
+</StyleList>
+<DesignerVersion DesignerVersion="HAF"/>
+<PreviewType PreviewType="0"/>
+</WorkBook>
